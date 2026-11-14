@@ -6,6 +6,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions from 
 ## [Unreleased]
 
 ### Added
+- `docs/labs/`: ASIC Task Force labs for new members. Lab 0 (`lab0_setup.md`) sets up WSL2,
+  Docker, LibreLane and the IHP PDK and ends with a first pull request to `members.md`.
+- `scripts/lab0_check.sh`: one-line OK/WARN/FAIL check of the Lab 0 environment.
 - `scripts/lint.sh`: Verilator lint of the hardened block (`torv_cpu`), used by CI.
 - GitHub Actions CI (`lint`, `regress`), `CONTRIBUTING.md`, `CODEOWNERS`, issue and PR templates.
 

@@ -12,6 +12,7 @@ student team at Politecnico di Torino.
 
 No commercial EDA tool or proprietary PDK is needed. Step-by-step instructions are in
 [docs/open_source_flow.md](docs/open_source_flow.md).
+New ASIC Task Force members start with the hands-on labs in [docs/labs/](docs/labs/README.md).
 
 ## Highlights
 

@@ -42,7 +42,7 @@ TORV is maintained by the ASIC Task Force of [SemiTO-V](https://semitov.github.i
 
 - Types: `feat`, `fix`, `perf`, `flow`, `test`, `docs`, `ci`, `refactor`, `chore`.
 - Scopes: `core`, `alu`, `muldiv`, `hazard`, `fwd`, `lsu`, `bus`, `soc`, `sram`, `uart`, `tb`,
-  `regress`, `librelane`, `sdc`, `env`.
+  `regress`, `librelane`, `sdc`, `env`, `labs`.
 - Examples:
   - `perf(core): register the forwarding selects`
   - `fix(bus): stop IBUS duplicating an instruction under stall_front`

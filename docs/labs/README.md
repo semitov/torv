@@ -6,7 +6,7 @@ open-source flow (LibreLane on IHP SG13G2), and every lab ends with a pull reque
 | Lab | Topic | Guide | You hand in (a pull request) |
 |-----|-------|-------|------------------------------|
 | 0 | Environment setup | [lab0_setup.md](lab0_setup.md) | Your row in [members.md](members.md) + `lab0_check.sh` output |
-| 1 | Simulation and regression | coming soon | Regression log + pipeline notes |
+| 1 | Simulation, regression and bug hunt | [lab1_sim.md](lab1_sim.md) | `lab1/<you>.md`: perf table, pipeline answers, bugs found |
 | 2 | Synthesis and pre-PnR timing | coming soon | QoR table at three clock periods |
 | 3 | Full RTL-to-GDS flow | coming soon | Signoff summary |
 | 4 | Tune one setting in your area | coming soon | A merged change with before/after QoR |

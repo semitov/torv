@@ -89,11 +89,12 @@ while (($#)); do
       shift
       ;;
     --build-dir)
-      export BUILD_DIR="${2:?missing value for --build-dir}"
+      # Absolute, because run_soc_sim.sh changes into the build directory.
+      export BUILD_DIR="$(realpath -m "${2:?missing value for --build-dir}")"
       shift 2
       ;;
     --build-dir=*)
-      export BUILD_DIR="${1#*=}"
+      export BUILD_DIR="$(realpath -m "${1#*=}")"
       shift
       ;;
     -h|--help)

@@ -1,0 +1,36 @@
+[*] TORV Lab 1: pipeline signals (docs/labs/lab1_sim.md)
+[*] Open with: ./scripts/open_gtkwave.sh --save docs/labs/lab1/pipeline.gtkw <case>
+[timestart] 0
+@200
+-Clock
+@28
+TOP.tb_torv_soc.dut.u_cpu.u_core.clk
+@200
+-IF: address being fetched
+@22
+TOP.tb_torv_soc.dut.u_cpu.u_core.pc[31:0]
+@200
+-ID: instruction in decode
+@22
+TOP.tb_torv_soc.dut.u_cpu.u_core.if_id_pc[31:0]
+TOP.tb_torv_soc.dut.u_cpu.u_core.if_id_inst[31:0]
+@200
+-EX: instruction in execute
+@22
+TOP.tb_torv_soc.dut.u_cpu.u_core.id_ex_pc[31:0]
+@24
+TOP.tb_torv_soc.dut.u_cpu.u_core.forward_a[1:0]
+TOP.tb_torv_soc.dut.u_cpu.u_core.forward_b[1:0]
+@200
+-Hazard unit
+@28
+TOP.tb_torv_soc.dut.u_cpu.u_core.stall_pc_h
+TOP.tb_torv_soc.dut.u_cpu.u_core.stall_if_id
+TOP.tb_torv_soc.dut.u_cpu.u_core.bubble_id_ex
+TOP.tb_torv_soc.dut.u_cpu.u_core.flush
+@200
+-WB: register write-back
+@24
+TOP.tb_torv_soc.dut.u_cpu.u_core.mem_wb_rd[4:0]
+@22
+TOP.tb_torv_soc.dut.u_cpu.u_core.mem_wb_result[31:0]

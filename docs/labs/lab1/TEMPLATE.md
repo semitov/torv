@@ -39,7 +39,7 @@ Guide: [../lab1_sim.md](../lab1_sim.md).
 - `DIV` cycles (about):
 - Signal that holds the front end:
 
-**Q5. Bus wait state and flush**
+**Q5. Bus wait state and flush** (idea is enough)
 
 **Q6. IPC and one idea to raise it**
 
@@ -66,7 +66,7 @@ Guide: [../lab1_sim.md](../lab1_sim.md).
 - Root cause (file, signal):
 - Fix:
 
-### Bug 4 (bonus)
+### Bug 4 (bonus, idea is enough)
 
 - What the regression says, and why:
 - Root cause (file, signal):

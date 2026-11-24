@@ -2,7 +2,8 @@
 
 **Goal:** run TORV in simulation, read its five-stage pipeline in a waveform, and find bugs
 with the regression the way a verification engineer does.
-**Time:** about 6–8 hours over one or two weeks.
+**Time:** about 8–10 hours over two weeks. If you are new to processor design, plan for the upper
+end: the first waveform takes the longest, the rest goes faster.
 **Before you start:** Lab 0 is merged (your row is in [`members.md`](members.md)), and
 `git switch main && git pull` brings you up to date.
 **Hand in:** one pull request that adds `docs/labs/lab1/<your-github-username>.md`, filled in
@@ -40,7 +41,9 @@ source scripts/env.sh
    ./scripts/run_case.sh tests/core/asm/hazard.S
    ```
 
-   It ends with `[PASS] TORV`. Everything for this case is in `build/sim/soc/hazard/`:
+   It prints the paths of its outputs, and `hazard.sim.log` ends with
+   `[PASS] TORV tohost signalled success`. A failing test prints `TORV SoC test failed; see …`
+   instead. Everything for this case is in `build/sim/soc/hazard/`:
 
    | File | What it is |
    |------|------------|
@@ -64,11 +67,14 @@ source scripts/env.sh
 
    ```bash
    ./scripts/run_case.sh --vcd tests/core/asm/hazard.S
-   ./scripts/open_gtkwave.sh hazard
+   ./scripts/open_gtkwave.sh --save docs/labs/lab1/pipeline.gtkw hazard
    ```
 
-   In GTKWave, open `TOP → tb_torv_soc → dut → u_cpu → u_core` in the left panel and add
-   these signals (select, then *Append*). Use *Data Format → Hex* for the 32-bit ones.
+   The save file [`lab1/pipeline.gtkw`](lab1/pipeline.gtkw) opens GTKWave with the signals below
+   already added, grouped by pipeline stage and in hex. Press *Zoom Fit* (the magnifier with the
+   square) to see the whole run, then zoom in on the PCs you are looking for.
+   The signals live under `TOP → tb_torv_soc → dut → u_cpu → u_core` (left panel), if you want
+   to add more: select them, then *Append*.
 
    | Signal | Meaning |
    |--------|---------|
@@ -76,9 +82,9 @@ source scripts/env.sh
    | `pc` | Address being fetched (IF) |
    | `if_id_pc`, `if_id_inst` | Instruction in ID |
    | `id_ex_pc` | Instruction in EX |
-   | `stall_pc`, `stall_if_id`, `bubble_id_ex` | Hazard unit outputs |
-   | `flush` | Taken branch or jump in EX |
    | `forward_a`, `forward_b` | Operand source in EX: `0` register file, `1` MEM/WB, `2` EX/MEM |
+   | `stall_pc_h`, `stall_if_id`, `bubble_id_ex` | Hazard unit outputs (`stall_pc_h` is the hazard unit's `stall_pc` output inside `torv_core`) |
+   | `flush` | Taken branch or jump in EX |
    | `mem_wb_rd`, `mem_wb_result` | What is written back |
 
    GTKWave runs on Windows through WSLg; if no window opens, run `wsl --update` in PowerShell.
@@ -109,7 +115,8 @@ The same regression runs in CI on every pull request (the `regress` check).
 
 Answer in your hand-in file. Short answers are fine: one or two sentences, a number, a
 screenshot. What matters is that the reasoning comes from what *you* saw in the waveform,
-trace or counters.
+trace or counters. Questions marked **(idea is enough)** are graded on your reasoning, not on
+getting the exact answer: write what you think and why, and we discuss it in the review.
 
 **Q1. Load-use.** In `hazard.S`, the first pair is:
 
@@ -137,7 +144,7 @@ cycles a taken branch really costs.
 cycles does a `MUL` take, and roughly how many does a `DIV`? Which hazard-unit output holds
 the front end while they run?
 
-**Q5. Bus wait states.** `hazard_branch_mem_stall` makes the SBUS hold `HREADY` low during a
+**Q5. Bus wait states (idea is enough).** `hazard_branch_mem_stall` makes the SBUS hold `HREADY` low during a
 store (see its `.plusargs`). Read spec §9: why must a taken branch **not** flush while
 `bus_stall` is high? One or two sentences.
 
@@ -179,10 +186,11 @@ diff build/good/pc_trace.tsv build/bad/pc_trace.tsv | head
 
 Do bugs 1–3. Bug 1 is a warm-up.
 
-**Bug 4 (bonus)** is different: run the regression with it first and look at the result. Then
-explain why the regression says what it says, and write a short assembly test (10–20 lines, in
-the style of `tests/core/asm/`) that fails with bug 4 and passes without it. Put the test in your
-report as a code block, together with the output of both runs:
+**Bug 4 (bonus, idea is enough)** is different: run the regression with it first and look at the
+result. Then explain why the regression says what it says, and, if you can, write a short
+assembly test (10–20 lines, in the style of `tests/core/asm/`) that fails with bug 4 and passes
+without it. An explanation of what such a test must do already counts; a working test is the
+full bonus. Put the test in your report as a code block, together with the output of both runs:
 
 ```bash
 ./scripts/run_case.sh --build-dir build/bonus /tmp/my_test.S

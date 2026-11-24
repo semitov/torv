@@ -14,6 +14,8 @@ Options:
   --target soc        Default: soc (core/ahb are deprecated aliases)
   --build-dir DIR     Case output directory (overrides default layout)
   --vcd FILE          Open this file directly
+  --save FILE         Load a GTKWave save file (signal list and formats), e.g.
+                      docs/labs/lab1/pipeline.gtkw
   -h, --help
 
 Default VCD path (when --vcd is omitted):
@@ -28,6 +30,7 @@ EOF
 TARGET="${TORV_TARGET:-soc}"
 BUILD_DIR=""
 VCD=""
+SAVE=""
 
 while (($#)); do
   case "$1" in
@@ -53,6 +56,14 @@ while (($#)); do
       ;;
     --vcd=*)
       VCD="${1#*=}"
+      shift
+      ;;
+    --save)
+      SAVE="${2:?}"
+      shift 2
+      ;;
+    --save=*)
+      SAVE="${1#*=}"
       shift
       ;;
     -h|--help)
@@ -93,6 +104,15 @@ else
     echo "  ./scripts/run_case.sh --vcd tests/core/asm/${STEM}.S" >&2
     exit 1
   fi
+fi
+
+if [[ -n "$SAVE" ]]; then
+  if [[ ! -f "$SAVE" ]]; then
+    echo "ERROR: save file not found: $SAVE" >&2
+    exit 1
+  fi
+  echo "Opening: $VCD with $SAVE"
+  exec "$GTKWAVE" "$VCD" "$SAVE"
 fi
 
 echo "Opening: $VCD"

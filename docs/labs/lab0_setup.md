@@ -6,8 +6,8 @@
 `./scripts/lab0_check.sh` in the description.
 
 Everything in this lab runs on Windows 11 (or 10) through WSL2 with Ubuntu 24.04. If you use
-Linux natively, skip §1 and do the rest as written. If you use a Mac, read the note at the end
-before you start.
+Linux natively, read the Native Linux note at the end, then skip §1. If you use a Mac, read
+the note at the end before you start.
 
 ```text
 Windows
@@ -230,3 +230,74 @@ You are done with Lab 0 when your pull request is merged.
 This guide is not tested on macOS yet. LibreLane's Docker image runs on Apple silicon through
 Docker Desktop, and the apt packages have Homebrew equivalents, but paths and versions differ.
 Tell the ASIC TF lead before you start, and we go through it together.
+
+## Native Linux
+
+Skip §1. The rest works as written, except for four things that depend on your distro:
+
+1. **Packages (§2, §3).** Use your own package manager. Package names can differ from the
+   Ubuntu ones.
+2. **RISC-V GCC (§2).** `lab0_check.sh` looks for the command `riscv64-unknown-elf-gcc`. If
+   your distro has no package with that name, use a prebuilt bare-metal toolchain and put its
+   `bin/` on your `PATH`.
+3. **Python (§4).** LibreLane's dependencies may fail to build on a very new system Python.
+   Keep the system Python and create the LibreLane venv with an older one, for example 3.12.
+4. **SELinux (§3, §4).** On distros that run SELinux (Fedora, RHEL family), the LibreLane
+   container cannot read your `$HOME`. See the Fedora notes below.
+
+### Fedora (tested on Fedora 45)
+
+**Packages.** Instead of §2 and the Docker repository in §3:
+
+```bash
+sudo dnf install -y git make gcc curl ca-certificates python3.12 python3-pip \
+    verilator gtkwave gh moby-engine docker-cli
+sudo systemctl enable --now docker
+sudo usermod -aG docker "$USER"      # then log out and back in
+```
+
+**RISC-V GCC.** Fedora only packages the Linux cross compiler (`gcc-riscv64-linux-gnu`),
+not the bare-metal one. Download the prebuilt `riscv64-elf-ubuntu-24.04-gcc` archive from
+<https://github.com/riscv-collab/riscv-gnu-toolchain/releases> and extract it so that
+`~/project/riscv_toolchain/bin/riscv64-unknown-elf-gcc` exists. `scripts/env.sh` finds it
+there; for `lab0_check.sh`, also add it to your `PATH`:
+
+```bash
+echo 'export PATH="$HOME/project/riscv_toolchain/bin:$PATH"' >> ~/.bashrc
+```
+
+**Python.** Fedora 45 ships Python 3.15, and some LibreLane dependencies do not build on it.
+The system Python can stay; create the venv with 3.12 and run the rest of §4 as written:
+
+```bash
+python3.12 -m venv ~/.venv/librelane
+```
+
+**SELinux.** LibreLane mounts your whole `$HOME` into the container, and SELinux blocks the
+container from reading it. Do not turn SELinux off. Instead, start only the Docker daemon
+without `--selinux-enabled`, with a systemd drop-in (a small file that overrides part of a
+service without editing the packaged one). Create
+`/etc/systemd/system/docker.service.d/no-selinux.conf` (`sudo systemctl edit docker` also
+works):
+
+```ini
+# LibreLane mounts all of $HOME; SELinux labels block that. Remove this file to restore.
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd \
+    -H fd:// \
+    --containerd=/run/containerd/containerd.sock \
+    --userland-proxy-path /usr/bin/docker-proxy \
+    --init-path /usr/bin/tini-static
+```
+
+The empty `ExecStart=` clears the packaged command; the second line is Fedora's own command
+without `--selinux-enabled` (compare with `systemctl cat docker`). Apply it:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+SELinux stays enforcing for the rest of the system; only Docker containers lose SELinux
+confinement. To undo it, delete the file and run the two commands again.
